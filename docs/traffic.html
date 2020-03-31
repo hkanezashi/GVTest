@@ -148,7 +148,7 @@ const contextVolume = svgVolume.append("g")
  * Sample code from: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
  * After deploying, update host address if necessary
  */
-d3.csv("http://{{ host_name }}:80/citibike/data/", citibikeType, function (error, data) {
+d3.csv("https://hkanezashi.github.io/gvtest/citibike_departed.csv", citibikeType, function (error, data) {
     if (error) throw error;
 
   xCB.domain(d3.extent(data, function(d) { return d.time; }));
@@ -202,7 +202,7 @@ d3.csv("http://{{ host_name }}:80/citibike/data/", citibikeType, function (error
  * Sample code from: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
  * After deploying, update host address if necessary
  */
-d3.csv("http://{{ host_name }}:80/volume/data/", trafficVolumeType, function (error, data) {
+d3.csv("https://hkanezashi.github.io/gvtest/traffic_NYC.csv", trafficVolumeType, function (error, data) {
     if (error) throw error;
 
   xV.domain(d3.extent(data, function(d) { return d.date_2020; }));
