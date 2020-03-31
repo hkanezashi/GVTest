@@ -1,0 +1,30 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+       <div id="piechart" style="width: 800px; height: 800px;"></div>
+<script>
+  google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Sentiment', 'Percentage'],
+          ['Anger',     10372],
+          ['Anticipation', 12599],
+           ['disgust', 7801],
+           ['fear', 19048],
+          [ 'joy', 15534],
+           ['other', 12302],
+           ['sadness', 14209],
+           ['surprise', 6487],
+           ['trust',20049]
+ ]);
+
+        var options = {
+          title: 'March 29, English'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+</script>

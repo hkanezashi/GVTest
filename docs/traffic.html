@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+ .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+</style>
+Number of bikes departed from CitiBike stations per hour
+<br>
+<svg id="citibike" width="960" height="500"></svg>
+<br>
+Average traffic speed (mph) in NYC freeways
+<br>
+<svg id="volume" width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+const svgCitiBike = d3.select("#citibike"),
+    marginCB = {top: 20, right: 20, bottom: 110, left: 40},
+    marginCB2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthCB = +svgCitiBike.attr("width") - marginCB.left - marginCB.right,
+    heightCB = +svgCitiBike.attr("height") - marginCB.top - marginCB.bottom,
+    heightCB2 = +svgCitiBike.attr("height") - marginCB2.top - marginCB2.bottom;
+
+
+const svgVolume = d3.select("#volume"),
+    marginV = {top: 20, right: 20, bottom: 110, left: 40},
+    marginV2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthV = +svgVolume.attr("width") - marginV.left - marginV.right,
+    heightV = +svgVolume.attr("height") - marginV.top - marginV.bottom,
+    heightV2 = +svgVolume.attr("height") - marginV2.top - marginV2.bottom;
+
+const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+
+const xCB = d3.scaleTime().range([0, widthCB]),
+    xCB2 = d3.scaleTime().range([0, widthCB]),
+    yCB = d3.scaleLinear().range([heightCB, 0]),
+    yCB2 = d3.scaleLinear().range([heightCB2, 0]);
+
+const xAxisCB = d3.axisBottom(xCB),
+    xAxisCB2 = d3.axisBottom(xCB2),
+    yAxisCB = d3.axisLeft(yCB);
+
+const brushCB = d3.brushX()
+    .extent([[0, 0], [widthCB, heightCB2]])
+    .on("brush end", brushedCB);
+
+const zoomCB = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthCB, heightCB]])
+    .extent([[0, 0], [widthCB, heightCB]])
+    .on("zoom", zoomedCB);
+
+
+const xV = d3.scaleTime().range([0, widthV]),
+    xV2 = d3.scaleTime().range([0, widthV]),
+    yV = d3.scaleLinear().range([heightV, 0]),
+    yV2 = d3.scaleLinear().range([heightV2, 0]);
+
+const xAxisV = d3.axisBottom(xV),
+    xAxisV2 = d3.axisBottom(xV2),
+    yAxisV = d3.axisLeft(yV);
+
+const brushV = d3.brushX()
+    .extent([[0, 0], [widthV, heightV2]])
+    .on("brush end", brushedV);
+
+const zoomV = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthV, heightV]])
+    .extent([[0, 0], [widthV, heightV]])
+    .on("zoom", zoomedV);
+
+
+const lineCB = d3.line()
+    .x(function (d) {
+        return xCB(d.time);
+    })
+    .y(function (d) {
+        return yCB(d.num_departed);
+    });
+
+const lineCB2 = d3.line()
+    .x(function (d) {
+        return xCB2(d.time);
+    })
+    .y(function (d) {
+        return yCB2(d.num_departed);
+    });
+
+
+const lineV = d3.line()
+    .x(function (d) {
+        return xV(d.date_2020);
+    })
+    .y(function (d) {
+        return yV(d.speed_2020);
+    });
+
+const lineV2 = d3.line()
+    .x(function (d) {
+        return xV2(d.date_2020);
+    })
+    .y(function (d) {
+        return yV2(d.speed_2020);
+    });
+
+
+const lineChartCitiBike = svgCitiBike.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginCB.left + "," + marginCB.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusCitiBike = svgCitiBike.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginCB.left + "," + marginCB.top + ")");
+
+const contextCitiBike = svgCitiBike.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginCB2.left + "," + marginCB2.top + ")");
+
+
+const lineChartVolume = svgVolume.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginV.left + "," + marginV.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusVolume = svgVolume.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginV.left + "," + marginV.top + ")");
+
+const contextVolume = svgVolume.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginV2.left + "," + marginV2.top + ")");
+
+/**
+ * CitiBike departure data
+ * Data CSV file: webapp/static/data/citibike_departed.csv
+ * Sample code from: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ * After deploying, update host address if necessary
+ */
+d3.csv("http://{{ host_name }}:80/citibike/data/", citibikeType, function (error, data) {
+    if (error) throw error;
+
+  xCB.domain(d3.extent(data, function(d) { return d.time; }));
+  yCB.domain([0, d3.max(data, function (d) { return d.num_departed; })]);
+  xCB2.domain(xCB.domain());
+  yCB2.domain(yCB.domain());
+
+    focusCitiBike.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightCB + ")")
+        .call(xAxisCB);
+
+    focusCitiBike.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisCB);
+
+    lineChartCitiBike.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineCB);
+
+    contextCitiBike.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineCB2);
+
+
+  contextCitiBike.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightCB2 + ")")
+      .call(xAxisCB2);
+
+  contextCitiBike.append("g")
+      .attr("class", "brush")
+      .call(brushCB)
+      .call(brushCB.move, xCB.range());
+
+  svgCitiBike.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthCB)
+      .attr("height", heightCB)
+      .attr("transform", "translate(" + marginCB.left + "," + marginCB.top + ")")
+      .call(zoomCB);
+
+  console.log(data);
+});
+
+/**
+ * Traffic Speed Data
+ * Data CSV file: webapp/static/data/citibike_departed.csv
+ * Sample code from: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ * After deploying, update host address if necessary
+ */
+d3.csv("http://{{ host_name }}:80/volume/data/", trafficVolumeType, function (error, data) {
+    if (error) throw error;
+
+  xV.domain(d3.extent(data, function(d) { return d.date_2020; }));
+  yV.domain([0, d3.max(data, function (d) { return d.speed_2020; })]);
+  xV2.domain(xV.domain());
+  yV2.domain(yV.domain());
+
+    focusVolume.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightV + ")")
+        .call(xAxisV);
+
+    focusVolume.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisV);
+
+    lineChartVolume.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineV);
+
+    contextVolume.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineV2);
+
+
+  contextVolume.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightV2 + ")")
+      .call(xAxisV2);
+
+  contextVolume.append("g")
+      .attr("class", "brush")
+      .call(brushV)
+      .call(brushV.move, xV.range());
+
+  svgVolume.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthV)
+      .attr("height", heightV)
+      .attr("transform", "translate(" + marginV.left + "," + marginV.top + ")")
+      .call(zoomV);
+
+
+  console.log(data);
+});
+
+
+function brushedCB() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xCB2.range();
+    xCB.domain(s.map(xCB2.invert, xCB2));
+  lineChartCitiBike.select(".line").attr("d", lineCB);
+  focusCitiBike.select(".axis--x").call(xAxisCB);
+  svgCitiBike.select(".zoom").call(zoomCB.transform, d3.zoomIdentity
+      .scale(widthCB / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedCB() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xCB.domain(t.rescaleX(xCB2).domain());
+  lineChartCitiBike.select(".line").attr("d", lineCB);
+  focusCitiBike.select(".axis--x").call(xAxisCB);
+  contextCitiBike.select(".brush").call(brushCB.move, xCB.range().map(t.invertX, t));
+}
+
+
+function brushedV() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xV2.range();
+    xV.domain(s.map(xV2.invert, xV2));
+  lineChartVolume.select(".line").attr("d", lineV);
+  focusVolume.select(".axis--x").call(xAxisV);
+  svgVolume.select(".zoom").call(zoomV.transform, d3.zoomIdentity
+      .scale(widthV / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedV() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xV.domain(t.rescaleX(xV2).domain());
+  lineChartVolume.select(".line").attr("d", lineV);
+  focusVolume.select(".axis--x").call(xAxisV);
+  contextVolume.select(".brush").call(brushV.move, xV.range().map(t.invertX, t));
+}
+
+
+function citibikeType(d) {
+    d.time = parseTime(d.time);
+    d.num_departed = +d.num_departed;
+    return d;
+}
+
+function trafficVolumeType(d) {
+    d.date_2020 = parseTime(d.date_2020);
+    d.speed_2020 = +d.speed_2020;
+    return d;
+}
+
+</script>
+
