@@ -84,7 +84,7 @@ const context = svg.append("g")
     .attr("transform", "translate(" + marginSub.left + "," + marginSub.top + ")");
 
 
-d3.csv("https://hkanezashi.github.io/gvtest/data/youtube_count.csv", youtubeCountType, function (error, data) {
+d3.csv("https://github.com/hkanezashi/GVTest/raw/master/docs/data/youtube_count.csv", youtubeCountType, function (error, data) {
     if (error) throw error;
 
   x.domain(d3.extent(data, function(d) { return d.time; }));
