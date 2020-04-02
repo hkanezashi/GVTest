@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Interaction Count</title>
-</head>
-
 <style>
 
  .line {
@@ -19,147 +14,551 @@
 }
 
 </style>
-<svg width="800" height="480" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+Hourly number of views in the United States
+<br>
+<svg id="US" width="960" height="500"></svg>
+<br>
 
+Hourly number of views in the Japan
+<br>
+<svg id="JP" width="960" height="500"></svg>
+<br>
+
+Hourly number of views in Spain
+<br>
+<svg id="SP" width="960" height="500"></svg>
+<br>
+
+Hourly number of views in Philippines
+<br>
+<svg id="PH" width="960" height="500"></svg>
+<br>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
-const svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 110, left: 40},
-    marginSub = {top: 430, right: 20, bottom: 30, left: 40},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom,
-    heightSub = +svg.attr("height") - marginSub.top - marginSub.bottom;
-
 const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
-const x = d3.scaleTime().range([0, width]),
-    xSub = d3.scaleTime().range([0, width]),
-    y = d3.scaleLinear().range([height, 0]),
-    ySub = d3.scaleLinear().range([heightSub, 0]);
 
-const xAxis = d3.axisBottom(x),
-    xAxisSub = d3.axisBottom(xSub),
-    yAxis = d3.axisLeft(y);
+const svgUS = d3.select("#US"),
+    marginUS = {top: 20, right: 20, bottom: 110, left: 40},
+    marginUS2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthUS = +svgUS.attr("width") - marginUS.left - marginUS.right,
+    heightUS = +svgUS.attr("height") - marginUS.top - marginUS.bottom,
+    heightUS2 = +svgUS.attr("height") - marginUS2.top - marginUS2.bottom;
 
-const brush = d3.brushX()
-    .extent([[0, 0], [width, heightSub]])
-    .on("brush end", brushed);
+const xUS = d3.scaleTime().range([0, widthUS]),
+    xUS2 = d3.scaleTime().range([0, widthUS]),
+    yUS = d3.scaleLinear().range([heightUS, 0]),
+    yUS2 = d3.scaleLinear().range([heightUS2, 0]);
 
-const zoom = d3.zoom()
+const xAxisUS = d3.axisBottom(xUS),
+    xAxisUS2 = d3.axisBottom(xUS2),
+    yAxisUS = d3.axisLeft(yUS);
+
+const brushUS = d3.brushX()
+    .extent([[0, 0], [widthUS, heightUS2]])
+    .on("brush end", brushedUS);
+
+const zoomUS = d3.zoom()
     .scaleExtent([1, Infinity])
-    .translateExtent([[0, 0], [width, height]])
-    .extent([[0, 0], [width, height]])
-    .on("zoom", zoomed);
+    .translateExtent([[0, 0], [widthUS, heightUS]])
+    .extent([[0, 0], [widthUS, heightUS]])
+    .on("zoom", zoomedUS);
 
-const line = d3.line()
+const lineUS = d3.line()
     .x(function (d) {
-        return x(d.time);
+        return xUS(d.time);
     })
     .y(function (d) {
-        return y(d.count);
+        return yUS(d.count);
     });
 
-const lineSub = d3.line()
+const lineUS2 = d3.line()
     .x(function (d) {
-        return xSub(d.time);
+        return xUS2(d.time);
     })
     .y(function (d) {
-        return ySub(d.count);
+        return yUS2(d.count);
     });
 
-
-const Line_chart = svg.append("g")
+const lineChartUS = svgUS.append("g")
     .attr("class", "focus")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("transform", "translate(" + marginUS.left + "," + marginUS.top + ")")
     .attr("clip-path", "url(#clip)");
 
-
-const focus = svg.append("g")
+const focusUS = svgUS.append("g")
     .attr("class", "focus")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + marginUS.left + "," + marginUS.top + ")");
 
-const context = svg.append("g")
+const contextUS = svgUS.append("g")
     .attr("class", "context")
-    .attr("transform", "translate(" + marginSub.left + "," + marginSub.top + ")");
+    .attr("transform", "translate(" + marginUS2.left + "," + marginUS2.top + ")");
 
 
-d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count.csv", youtubeCountType, function (error, data) {
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count_US.csv",
+    countType, function (error, data) {
     if (error) throw error;
 
-  x.domain(d3.extent(data, function(d) { return d.time; }));
-  y.domain([0, d3.max(data, function (d) { return d.count; })]);
-  xSub.domain(x.domain());
-  ySub.domain(y.domain());
+  xJP.domain(d3.extent(data, function(d) { return d.time; }));
+  yJP.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xJP2.domain(xJP.domain());
+  yJP2.domain(yJP.domain());
 
-    focus.append("g")
+    focusJP.append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .attr("transform", "translate(0," + heightJP + ")")
+        .call(xAxisUS);
 
-    focus.append("g")
+    focusUS.append("g")
         .attr("class", "axis axis--y")
-        .call(yAxis);
+        .call(yAxisUS);
 
-    Line_chart.append("path")
+    lineChartUS.append("path")
         .datum(data)
         .attr("class", "line")
-        .attr("d", line);
+        .attr("d", lineUS);
 
-    context.append("path")
+    contextUS.append("path")
         .datum(data)
         .attr("class", "line")
-        .attr("d", lineSub);
+        .attr("d", lineUS2);
 
 
-  context.append("g")
+  contextUS.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + heightSub + ")")
-      .call(xAxisSub);
+      .attr("transform", "translate(0," + heightUS2 + ")")
+      .call(xAxisUS2);
 
-  context.append("g")
+  contextUS.append("g")
       .attr("class", "brush")
-      .call(brush)
-      .call(brush.move, x.range());
+      .call(brushUS)
+      .call(brushUS.move, xUS.range());
 
-  svg.append("rect")
+  svgUS.append("rect")
       .attr("class", "zoom")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(zoom);
-
+      .attr("width", widthUS)
+      .attr("height", heightUS)
+      .attr("transform", "translate(" + marginUS.left + "," + marginUS.top + ")")
+      .call(zoomUS);
 
   console.log(data);
 });
 
-
-function brushed() {
+function brushedUS() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-    const s = d3.event.selection || xSub.range();
-    x.domain(s.map(xSub.invert, xSub));
-  Line_chart.select(".line").attr("d", line);
-  focus.select(".axis--x").call(xAxis);
-  svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-      .scale(width / (s[1] - s[0]))
+    const s = d3.event.selection || xUS2.range();
+    xUS.domain(s.map(xUS2.invert, xUS2));
+  lineChartUS.select(".line").attr("d", lineUS);
+  focusUS.select(".axis--x").call(xAxisUS);
+  svgUS.select(".zoom").call(zoomUS.transform, d3.zoomIdentity
+      .scale(widthUS / (s[1] - s[0]))
       .translate(-s[0], 0));
 }
 
-function zoomed() {
+function zoomedUS() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
     const t = d3.event.transform;
-    x.domain(t.rescaleX(xSub).domain());
-  Line_chart.select(".line").attr("d", line);
-  focus.select(".axis--x").call(xAxis);
-  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+    xUS.domain(t.rescaleX(xUS2).domain());
+  lineChartUS.select(".line").attr("d", lineUS);
+  focusUS.select(".axis--x").call(xAxisUS);
+  contextUS.select(".brush").call(brushUS.move, xUS.range().map(t.invertX, t));
 }
 
 
-function youtubeCountType(d) {
+
+
+
+const svgJP = d3.select("#JP"),
+    marginJP = {top: 20, right: 20, bottom: 110, left: 40},
+    marginJP2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthJP = +svgJP.attr("width") - marginJP.left - marginJP.right,
+    heightJP = +svgJP.attr("height") - marginJP.top - marginJP.bottom,
+    heightJP2 = +svgJP.attr("height") - marginJP2.top - marginJP2.bottom;
+
+const xJP = d3.scaleTime().range([0, widthJP]),
+    xJP2 = d3.scaleTime().range([0, widthJP]),
+    yJP = d3.scaleLinear().range([heightJP, 0]),
+    yJP2 = d3.scaleLinear().range([heightJP2, 0]);
+
+const xAxisJP = d3.axisBottom(xJP),
+    xAxisJP2 = d3.axisBottom(xJP2),
+    yAxisJP = d3.axisLeft(yJP);
+
+const brushJP = d3.brushX()
+    .extent([[0, 0], [widthJP, heightJP2]])
+    .on("brush end", brushedJP);
+
+const zoomJP = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthJP, heightJP]])
+    .extent([[0, 0], [widthJP, heightJP]])
+    .on("zoom", zoomedJP);
+
+const lineJP = d3.line()
+    .x(function (d) {
+        return xJP(d.time);
+    })
+    .y(function (d) {
+        return yJP(d.count);
+    });
+
+const lineJP2 = d3.line()
+    .x(function (d) {
+        return xJP2(d.time);
+    })
+    .y(function (d) {
+        return yJP2(d.count);
+    });
+
+const lineChartJP = svgJP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusJP = svgJP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")");
+
+const contextJP = svgJP.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginJP2.left + "," + marginJP2.top + ")");
+
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count_JP.csv",
+    countType, function (error, data) {
+    if (error) throw error;
+
+  xJP.domain(d3.extent(data, function(d) { return d.time; }));
+  yJP.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xJP2.domain(xJP.domain());
+  yJP2.domain(yJP.domain());
+
+    focusJP.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightJP + ")")
+        .call(xAxisJP);
+
+    focusJP.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisJP);
+
+    lineChartJP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineJP);
+
+    contextJP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineJP2);
+
+
+  contextJP.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightJP2 + ")")
+      .call(xAxisJP2);
+
+  contextJP.append("g")
+      .attr("class", "brush")
+      .call(brushJP)
+      .call(brushJP.move, xJP.range());
+
+  svgJP.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthJP)
+      .attr("height", heightJP)
+      .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")")
+      .call(zoomJP);
+
+  console.log(data);
+});
+
+function brushedJP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xJP2.range();
+    xJP.domain(s.map(xJP2.invert, xJP2));
+  lineChartJP.select(".line").attr("d", lineJP);
+  focusJP.select(".axis--x").call(xAxisJP);
+  svgJP.select(".zoom").call(zoomJP.transform, d3.zoomIdentity
+      .scale(widthJP / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedJP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xJP.domain(t.rescaleX(xJP2).domain());
+  lineChartJP.select(".line").attr("d", lineJP);
+  focusJP.select(".axis--x").call(xAxisJP);
+  contextJP.select(".brush").call(brushJP.move, xJP.range().map(t.invertX, t));
+}
+
+
+
+
+
+const svgSP = d3.select("#SP"),
+    marginSP = {top: 20, right: 20, bottom: 110, left: 40},
+    marginSP2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthSP = +svgSP.attr("width") - marginSP.left - marginSP.right,
+    heightSP = +svgSP.attr("height") - marginSP.top - marginSP.bottom,
+    heightSP2 = +svgSP.attr("height") - marginSP2.top - marginSP2.bottom;
+
+const xSP = d3.scaleTime().range([0, widthSP]),
+    xSP2 = d3.scaleTime().range([0, widthSP]),
+    ySP = d3.scaleLinear().range([heightSP, 0]),
+    ySP2 = d3.scaleLinear().range([heightSP2, 0]);
+
+const xAxisSP = d3.axisBottom(xSP),
+    xAxisSP2 = d3.axisBottom(xSP2),
+    yAxisSP = d3.axisLeft(ySP);
+
+const brushSP = d3.brushX()
+    .extent([[0, 0], [widthSP, heightSP2]])
+    .on("brush end", brushedSP);
+
+const zoomSP = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthSP, heightSP]])
+    .extent([[0, 0], [widthSP, heightSP]])
+    .on("zoom", zoomedSP);
+
+const lineSP = d3.line()
+    .x(function (d) {
+        return xSP(d.time);
+    })
+    .y(function (d) {
+        return ySP(d.count);
+    });
+
+const lineSP2 = d3.line()
+    .x(function (d) {
+        return xSP2(d.time);
+    })
+    .y(function (d) {
+        return ySP2(d.count);
+    });
+
+const lineChartSP = svgSP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusSP = svgSP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")");
+
+const contextSP = svgSP.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginSP2.left + "," + marginSP2.top + ")");
+
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count_SP.csv",
+    countType, function (error, data) {
+    if (error) throw error;
+
+  xSP.domain(d3.extent(data, function(d) { return d.time; }));
+  ySP.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xSP2.domain(xSP.domain());
+  ySP2.domain(ySP.domain());
+
+    focusSP.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightSP + ")")
+        .call(xAxisSP);
+
+    focusSP.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisSP);
+
+    lineChartSP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineSP);
+
+    contextSP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineSP2);
+
+
+  contextSP.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightSP2 + ")")
+      .call(xAxisSP2);
+
+  contextSP.append("g")
+      .attr("class", "brush")
+      .call(brushSP)
+      .call(brushSP.move, xSP.range());
+
+  svgSP.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthSP)
+      .attr("height", heightSP)
+      .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")")
+      .call(zoomSP);
+
+  console.log(data);
+});
+
+function brushedSP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xSP2.range();
+    xSP.domain(s.map(xSP2.invert, xSP2));
+  lineChartSP.select(".line").attr("d", lineSP);
+  focusSP.select(".axis--x").call(xAxisSP);
+  svgSP.select(".zoom").call(zoomSP.transform, d3.zoomIdentity
+      .scale(widthSP / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedSP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xSP.domain(t.rescaleX(xSP2).domain());
+  lineChartSP.select(".line").attr("d", lineSP);
+  focusSP.select(".axis--x").call(xAxisSP);
+  contextSP.select(".brush").call(brushSP.move, xSP.range().map(t.invertX, t));
+}
+
+
+
+
+const svgPH = d3.select("#PH"),
+    marginPH = {top: 20, right: 20, bottom: 110, left: 40},
+    marginPH2 = {top: 430, right: 20, bottom: 30, left: 40},
+    widthPH = +svgPH.attr("width") - marginPH.left - marginPH.right,
+    heightPH = +svgPH.attr("height") - marginPH.top - marginPH.bottom,
+    heightPH2 = +svgPH.attr("height") - marginPH2.top - marginPH2.bottom;
+
+const xPH = d3.scaleTime().range([0, widthPH]),
+    xPH2 = d3.scaleTime().range([0, widthPH]),
+    yPH = d3.scaleLinear().range([heightPH, 0]),
+    yPH2 = d3.scaleLinear().range([heightPH2, 0]);
+
+const xAxisPH = d3.axisBottom(xPH),
+    xAxisPH2 = d3.axisBottom(xPH2),
+    yAxisPH = d3.axisLeft(yPH);
+
+const brushPH = d3.brushX()
+    .extent([[0, 0], [widthPH, heightPH2]])
+    .on("brush end", brushedPH);
+
+const zoomPH = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthPH, heightPH]])
+    .extent([[0, 0], [widthPH, heightPH]])
+    .on("zoom", zoomedPH);
+
+const linePH = d3.line()
+    .x(function (d) {
+        return xPH(d.time);
+    })
+    .y(function (d) {
+        return yPH(d.count);
+    });
+
+const linePH2 = d3.line()
+    .x(function (d) {
+        return xPH2(d.time);
+    })
+    .y(function (d) {
+        return yPH2(d.count);
+    });
+
+const lineChartPH = svgPH.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusPH = svgPH.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")");
+
+const contextPH = svgPH.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginPH2.left + "," + marginPH2.top + ")");
+
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count_PH.csv",
+    countType, function (error, data) {
+    if (error) throw error;
+
+  xPH.domain(d3.extent(data, function(d) { return d.time; }));
+  yPH.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xPH2.domain(xPH.domain());
+  yPH2.domain(yPH.domain());
+
+    focusPH.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightPH + ")")
+        .call(xAxisPH);
+
+    focusPH.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisPH);
+
+    lineChartPH.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", linePH);
+
+    contextPH.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", linePH2);
+
+
+  contextPH.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightPH2 + ")")
+      .call(xAxisPH2);
+
+  contextPH.append("g")
+      .attr("class", "brush")
+      .call(brushPH)
+      .call(brushPH.move, xPH.range());
+
+  svgPH.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthPH)
+      .attr("height", heightPH)
+      .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")")
+      .call(zoomPH);
+
+  console.log(data);
+});
+
+function brushedPH() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xPH2.range();
+    xPH.domain(s.map(xPH2.invert, xPH2));
+  lineChartPH.select(".line").attr("d", linePH);
+  focusPH.select(".axis--x").call(xAxisPH);
+  svgPH.select(".zoom").call(zoomPH.transform, d3.zoomIdentity
+      .scale(widthPH / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedPH() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xPH.domain(t.rescaleX(xPH2).domain());
+  lineChartPH.select(".line").attr("d", linePH);
+  focusPH.select(".axis--x").call(xAxisPH);
+  contextPH.select(".brush").call(brushPH.move, xPH.range().map(t.invertX, t));
+}
+
+
+
+function countType(d) {
     d.time = parseTime(d.time);
     d.count = +d.count;
     return d;
 }
+
 
 </script>
 
