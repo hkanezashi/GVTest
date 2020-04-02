@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Traffic Speed of NYC Freeways</title>
+</head>
+
+<style>
+
+ .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+</style>
+<svg width="800" height="480" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+const svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 110, left: 40},
+    margin2 = {top: 430, right: 20, bottom: 30, left: 40},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+
+const x = d3.scaleTime().range([0, width]),
+    x2 = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    y2 = d3.scaleLinear().range([height2, 0]);
+
+const xAxis = d3.axisBottom(x),
+    xAxis2 = d3.axisBottom(x2),
+    yAxis = d3.axisLeft(y);
+
+const brush = d3.brushX()
+    .extent([[0, 0], [width, height2]])
+    .on("brush end", brushed);
+
+const zoom = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [width, height]])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
+
+const line = d3.line()
+    .x(function (d) {
+        return x(d.date_2020);
+    })
+    .y(function (d) {
+        return y(d.speed_2020);
+    });
+
+const line2 = d3.line()
+    .x(function (d) {
+        return x2(d.date_2020);
+    })
+    .y(function (d) {
+        return y2(d.speed_2020);
+    });
+
+
+const Line_chart = svg.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+
+const focus = svg.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+const context = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+
+/**
+ * Traffic Speed Data
+ * Data CSV file: webapp/static/data/citibike_departed.csv
+ * Sample code from: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ * After deploying, update host address if necessary
+ */
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/traffic_NYC.csv",
+    trafficVolumeType, function (error, data) {
+    if (error) throw error;
+
+  x.domain(d3.extent(data, function(d) { return d.date_2020; }));
+  y.domain([0, d3.max(data, function (d) { return d.speed_2020; })]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+
+    focus.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    focus.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis);
+
+    Line_chart.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+    context.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line2);
+
+
+  context.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
+
+  context.append("g")
+      .attr("class", "brush")
+      .call(brush)
+      .call(brush.move, x.range());
+
+  svg.append("rect")
+      .attr("class", "zoom")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(zoom);
+
+
+  console.log(data);
+});
+
+
+function brushed() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || x2.range();
+    x.domain(s.map(x2.invert, x2));
+  Line_chart.select(".line").attr("d", line);
+  focus.select(".axis--x").call(xAxis);
+  svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+      .scale(width / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomed() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    x.domain(t.rescaleX(x2).domain());
+  Line_chart.select(".line").attr("d", line);
+  focus.select(".axis--x").call(xAxis);
+  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+}
+
+
+function trafficVolumeType(d) {
+    d.date_2020 = parseTime(d.date_2020);
+    d.speed_2020 = +d.speed_2020;
+    return d;
+}
+
+</script>
+
