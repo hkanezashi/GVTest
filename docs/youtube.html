@@ -57,7 +57,7 @@ const line = d3.line()
         return x(d.time);
     })
     .y(function (d) {
-        return y(d.All);
+        return y(d.count);
     });
 
 const lineSub = d3.line()
@@ -65,7 +65,7 @@ const lineSub = d3.line()
         return xSub(d.time);
     })
     .y(function (d) {
-        return ySub(d.All);
+        return ySub(d.count);
     });
 
 
@@ -88,7 +88,7 @@ d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/you
     if (error) throw error;
 
   x.domain(d3.extent(data, function(d) { return d.time; }));
-  y.domain([0, d3.max(data, function (d) { return d.All; })]);
+  y.domain([0, d3.max(data, function (d) { return d.count; })]);
   xSub.domain(x.domain());
   ySub.domain(y.domain());
 
@@ -157,7 +157,7 @@ function zoomed() {
 
 function youtubeCountType(d) {
     d.time = parseTime(d.time);
-    d.All = +d.All;
+    d.count = +d.count;
     return d;
 }
 
