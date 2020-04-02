@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hourly number of YouTube views in Philippines</title>
+</head>
+
+<style>
+
+ .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+</style>
+<svg id="PH" width="960" height="500"></svg>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+
+
+const svgPH = d3.select("#PH"),
+    marginPH = {top: 20, right: 20, bottom: 110, left: 80},
+    marginPH2 = {top: 430, right: 20, bottom: 30, left: 80},
+    widthPH = +svgPH.attr("width") - marginPH.left - marginPH.right,
+    heightPH = +svgPH.attr("height") - marginPH.top - marginPH.bottom,
+    heightPH2 = +svgPH.attr("height") - marginPH2.top - marginPH2.bottom;
+
+const xPH = d3.scaleTime().range([0, widthPH]),
+    xPH2 = d3.scaleTime().range([0, widthPH]),
+    yPH = d3.scaleLinear().range([heightPH, 0]),
+    yPH2 = d3.scaleLinear().range([heightPH2, 0]);
+
+const xAxisPH = d3.axisBottom(xPH),
+    xAxisPH2 = d3.axisBottom(xPH2),
+    yAxisPH = d3.axisLeft(yPH);
+
+const brushPH = d3.brushX()
+    .extent([[0, 0], [widthPH, heightPH2]])
+    .on("brush end", brushedPH);
+
+const zoomPH = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthPH, heightPH]])
+    .extent([[0, 0], [widthPH, heightPH]])
+    .on("zoom", zoomedPH);
+
+const linePH = d3.line()
+    .x(function (d) {
+        return xPH(d.time);
+    })
+    .y(function (d) {
+        return yPH(d.count);
+    });
+
+const linePH2 = d3.line()
+    .x(function (d) {
+        return xPH2(d.time);
+    })
+    .y(function (d) {
+        return yPH2(d.count);
+    });
+
+const lineChartPH = svgPH.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusPH = svgPH.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")");
+
+const contextPH = svgPH.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginPH2.left + "," + marginPH2.top + ")");
+
+
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube_count_PH.csv",
+    countType, function (error, data) {
+    if (error) throw error;
+
+  xPH.domain(d3.extent(data, function(d) { return d.time; }));
+  yPH.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xPH2.domain(xPH.domain());
+  yPH2.domain(yPH.domain());
+
+    focusPH.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightPH + ")")
+        .call(xAxisPH);
+
+    focusPH.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisPH);
+
+    lineChartPH.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", linePH);
+
+    contextPH.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", linePH2);
+
+
+  contextPH.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightPH2 + ")")
+      .call(xAxisPH2);
+
+  contextPH.append("g")
+      .attr("class", "brush")
+      .call(brushPH)
+      .call(brushPH.move, xPH.range());
+
+  svgPH.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthPH)
+      .attr("height", heightPH)
+      .attr("transform", "translate(" + marginPH.left + "," + marginPH.top + ")")
+      .call(zoomPH);
+
+  console.log(data);
+});
+
+function brushedPH() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xPH2.range();
+    xPH.domain(s.map(xPH2.invert, xPH2));
+  lineChartPH.select(".line").attr("d", linePH);
+  focusPH.select(".axis--x").call(xAxisPH);
+  svgPH.select(".zoom").call(zoomPH.transform, d3.zoomIdentity
+      .scale(widthPH / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedPH() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xPH.domain(t.rescaleX(xPH2).domain());
+  lineChartPH.select(".line").attr("d", linePH);
+  focusPH.select(".axis--x").call(xAxisPH);
+  contextPH.select(".brush").call(brushPH.move, xPH.range().map(t.invertX, t));
+}
+
+
+function countType(d) {
+    d.time = parseTime(d.time);
+    d.count = +d.count;
+    return d;
+}
+
+
+</script>
+
