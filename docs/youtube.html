@@ -14,25 +14,26 @@
 }
 
 </style>
-Hourly number of views in the United States
+Hourly number of YouTube views in the United States
 <br>
 <svg id="US" width="960" height="500"></svg>
 <br>
 
-Hourly number of views in the Japan
+Hourly number of YouTube views in the Japan
 <br>
 <svg id="JP" width="960" height="500"></svg>
 <br>
 
-Hourly number of views in Spain
+Hourly number of YouTube views in Spain
 <br>
 <svg id="SP" width="960" height="500"></svg>
 <br>
 
-Hourly number of views in Philippines
+Hourly number of YouTube views in Philippines
 <br>
 <svg id="PH" width="960" height="500"></svg>
 <br>
+
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
@@ -100,14 +101,14 @@ d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/you
     countType, function (error, data) {
     if (error) throw error;
 
-  xJP.domain(d3.extent(data, function(d) { return d.time; }));
-  yJP.domain([0, d3.max(data, function (d) { return d.count; })]);
-  xJP2.domain(xJP.domain());
-  yJP2.domain(yJP.domain());
+  xUS.domain(d3.extent(data, function(d) { return d.time; }));
+  yUS.domain([0, d3.max(data, function (d) { return d.count; })]);
+  xUS2.domain(xUS.domain());
+  yUS2.domain(yUS.domain());
 
-    focusJP.append("g")
+    focusUS.append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + heightJP + ")")
+        .attr("transform", "translate(0," + heightUS + ")")
         .call(xAxisUS);
 
     focusUS.append("g")
