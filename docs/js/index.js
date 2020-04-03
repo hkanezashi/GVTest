@@ -3,14 +3,14 @@ var data = null;
 $.getJSON(data_json, function(input_data){
     data = input_data.features;
 });
-mapboxgl.accessToken = 'pk.eyJ1IjoiaGthbmV6YXNoaSIsImEiOiJjamh0cDA5ODkwZnl0M2tydnlldmdrcTljIn0.qwv3INHvhtQd-CaUwPNhhw';
+mapboxgl.accessToken = 'pk.eyJ1IjoiaGthbmV6YXNoaSIsImEiOiJjazhrN2Q3eWYwa2V4M2VxaGd6ZnVwZm93In0.mhtigkPA716s7om9DdJxRQ';
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
     center: [-73.98, 40.75],
     zoom: 8,
     minZoom: 6
-})
+});
 map.on('load', function() {
     // Add a source for the state polygons.
     map.addSource('nyczip', {
