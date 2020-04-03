@@ -3,7 +3,7 @@ var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
     center: [-73.98, 40.75],
-    zoom: 9,
+    zoom: 10,
     minZoom: 8
 });
 map.on('load', function() {
