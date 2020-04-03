@@ -3,7 +3,7 @@ var data = null;
 $.getJSON(data_json, function(input_data){
     data = input_data.features;
 });
-mapboxgl.accessToken = '';
+mapboxgl.accessToken = 'pk.eyJ1IjoiaGthbmV6YXNoaSIsImEiOiJjamh0cDA5ODkwZnl0M2tydnlldmdrcTljIn0.qwv3INHvhtQd-CaUwPNhhw';
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
