@@ -1,16 +1,21 @@
-mapboxgl.accessToken = '';  // Mapbox access token with URL restrictions
+const data_json = 'https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/nyc-zip-data.geojson';
+var data = null;
+$.getJSON(data_json, function(input_data){
+    data = input_data.features;
+});
+mapboxgl.accessToken = '';
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
-    center: [-73.98, 40.75],  // New york
-    zoom: 10,
-    minZoom: 8
-});
+    center: [-73.98, 40.75],
+    zoom: 8,
+    minZoom: 6
+})
 map.on('load', function() {
     // Add a source for the state polygons.
     map.addSource('nyczip', {
         'type': 'geojson',
-        'data': 'https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/nyc-zip-data.geojson'
+        'data': data_json
     });
 
     // Add a layer showing the state polygons.
@@ -30,6 +35,22 @@ map.on('load', function() {
     var popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false
+    });
+
+        // When a click event occurs on a feature in the states layer, open a popup at the
+    // location of the click, with description HTML from its properties.
+    map.on('mouseenter', 'states-layer', function(e) {
+//         console.log(map.getSource("nyczip"));
+        data.forEach(elem => {
+            var prop = elem.properties;
+            if(e.features[0].properties.postalCode === prop.postalCode){
+                var description = `<h4>${prop.postalCode}: ${prop.PO_NAME}</h4><ul><li>Positive case: ${prop.Positive}</li><li>Total cases: ${prop.Total}</li>`;
+                popup
+                    .setLngLat(e.lngLat)
+                    .setHTML(description)
+                    .addTo(map);
+            }
+        });
     });
 
     // Change the cursor to a pointer when the mouse is over the states layer.
