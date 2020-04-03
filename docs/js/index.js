@@ -5,7 +5,7 @@ var map = new mapboxgl.Map({
     center: [-73.98, 40.75],
     zoom: 8,
     minZoom: 6
-})
+});
 map.on('load', function() {
     // Add a source for the state polygons.
     map.addSource('nyczip', {
