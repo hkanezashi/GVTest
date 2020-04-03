@@ -3,8 +3,8 @@ var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
     center: [-73.98, 40.75],
-    zoom: 8,
-    minZoom: 6
+    zoom: 9,
+    minZoom: 8
 });
 map.on('load', function() {
     // Add a source for the state polygons.
