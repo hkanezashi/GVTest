@@ -1,8 +1,8 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiaGthbmV6YXNoaSIsImEiOiJjamh0cDA5ODkwZnl0M2tydnlldmdrcTljIn0.qwv3INHvhtQd-CaUwPNhhw';
+mapboxgl.accessToken = '';  // Mapbox access token with URL restrictions
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
-    center: [-73.98, 40.75],
+    center: [-73.98, 40.75],  // New york
     zoom: 10,
     minZoom: 8
 });
