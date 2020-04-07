@@ -82,8 +82,8 @@ const xAxis = d3.axisBottom(x),
     xAxis2 = d3.axisBottom(x2),
     yAxis = d3.axisLeft(y);
 
-xAxis.tickFormat(d3.timeFormat("%Y-%m"));
-xAxis2.tickFormat(d3.timeFormat("%Y-%m"));
+xAxis.tickFormat(d3.timeFormat("%m-%d"));
+xAxis2.tickFormat(d3.timeFormat("%m-%d"));
 
 const brush = d3.brushX()
     .extent([[0, 0], [width, height2]])
@@ -137,7 +137,7 @@ const context = svg.append("g")
    
    Note: The direct public link of the CSV file is shown below, not the above (for browser).
 */
-d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/instagram/stayathome_freq.csv",
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/instagram/stayathomemom_freq.csv",
     dataType, function (error, data) {
     if (error) throw error;
 
