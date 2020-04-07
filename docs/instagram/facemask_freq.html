@@ -82,6 +82,9 @@ const xAxis = d3.axisBottom(x),
     xAxis2 = d3.axisBottom(x2),
     yAxis = d3.axisLeft(y);
 
+xAxis.tickFormat(d3.timeFormat("%Y-%m"));
+xAxis2.tickFormat(d3.timeFormat("%Y-%m"));
+
 const brush = d3.brushX()
     .extent([[0, 0], [width, height2]])
     .on("brush end", brushed);
@@ -160,7 +163,7 @@ d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/ins
     context.append("path")
         .datum(data)
         .attr("class", "line")
-        .attr("d", line2);;
+        .attr("d", line2);
 
 
   context.append("g")
