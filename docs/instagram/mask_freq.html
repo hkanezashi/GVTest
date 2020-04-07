@@ -104,7 +104,7 @@ const lineJP = d3.line()
         return xJP(d.time);
     })
     .y(function (d) {
-        return yJP(d.count);
+        return yJP(d.value);
     });
 
 const lineJP2 = d3.line()
@@ -112,7 +112,7 @@ const lineJP2 = d3.line()
         return xJP2(d.time);
     })
     .y(function (d) {
-        return yJP2(d.count);
+        return yJP2(d.value);
     });
 
 const lineChartJP = svgJP.append("g")
@@ -135,7 +135,7 @@ d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/ins
     if (error) throw error;
 
   xJP.domain(d3.extent(data, function(d) { return d.time; }));
-  yJP.domain([0, d3.max(data, function (d) { return d.count; })]);
+  yJP.domain([0, d3.max(data, function (d) { return d.value; })]);
   xJP2.domain(xJP.domain());
   yJP2.domain(yJP.domain());
 
