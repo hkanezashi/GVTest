@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- 
+  Template of the data visualization (line chart) in d3.js from CSV data file
+  Reference: Brush & Zoom line chart - bl.ocks.org: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ -->
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hourly Instagram posts with hashtag "mask"</title>
+  <title>COVID-19 Data Visualization</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -49,163 +54,162 @@
       fill: none;
       pointer-events: all;
     }
+
   </style>
 </head>
 
 <body>
   <div id='graph' class="centered-graph">
-    <!--  ADD INSIDE THIS DIV THE SVG GRAPH
-     Including the following svg attributes:
-     width="WWW" height="HHH" preserveAspectRatio="xMidYMid meet" viewBox="0 0 WWW HHH"
-     where WWW is the width, and HHH is the heigth of the graph
-
-     Design rules:
-     - No background color / or: var(--main-bg-color)
-     - Lines color: -->
-
-    <!-- EXAMPLE:
-    <svg width="960" height="500" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 500"></svg> -->
-    <svg id="JP" width="960" height="500" viewBox="0 0 960 500" preserveAspectRatio="xMidYMid meet"></svg>
-
+      <svg width="800" height="480" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid meet"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
+const svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 110, left: 40},
+    margin2 = {top: 430, right: 20, bottom: 30, left: 40},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
 const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
+const x = d3.scaleTime().range([0, width]),
+    x2 = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    y2 = d3.scaleLinear().range([height2, 0]);
 
-const svgJP = d3.select("#JP"),
-    marginJP = {top: 20, right: 20, bottom: 110, left: 80},
-    marginJP2 = {top: 430, right: 20, bottom: 30, left: 80},
-    widthJP = +svgJP.attr("width") - marginJP.left - marginJP.right,
-    heightJP = +svgJP.attr("height") - marginJP.top - marginJP.bottom,
-    heightJP2 = +svgJP.attr("height") - marginJP2.top - marginJP2.bottom;
+const xAxis = d3.axisBottom(x),
+    xAxis2 = d3.axisBottom(x2),
+    yAxis = d3.axisLeft(y);
 
-const xJP = d3.scaleTime().range([0, widthJP]),
-    xJP2 = d3.scaleTime().range([0, widthJP]),
-    yJP = d3.scaleLinear().range([heightJP, 0]),
-    yJP2 = d3.scaleLinear().range([heightJP2, 0]);
+const brush = d3.brushX()
+    .extent([[0, 0], [width, height2]])
+    .on("brush end", brushed);
 
-const xAxisJP = d3.axisBottom(xJP),
-    xAxisJP2 = d3.axisBottom(xJP2),
-    yAxisJP = d3.axisLeft(yJP);
-
-const brushJP = d3.brushX()
-    .extent([[0, 0], [widthJP, heightJP2]])
-    .on("brush end", brushedJP);
-
-const zoomJP = d3.zoom()
+const zoom = d3.zoom()
     .scaleExtent([1, Infinity])
-    .translateExtent([[0, 0], [widthJP, heightJP]])
-    .extent([[0, 0], [widthJP, heightJP]])
-    .on("zoom", zoomedJP);
+    .translateExtent([[0, 0], [width, height]])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
 
-const lineJP = d3.line()
+const line = d3.line()
     .x(function (d) {
-        return xJP(d.time);
+        return x(d.time);
     })
     .y(function (d) {
-        return yJP(d.value);
+        return y(d.value);
     });
 
-const lineJP2 = d3.line()
+const line2 = d3.line()
     .x(function (d) {
-        return xJP2(d.time);
+        return x2(d.time);
     })
     .y(function (d) {
-        return yJP2(d.value);
+        return y2(d.value);
     });
 
-const lineChartJP = svgJP.append("g")
+
+const Line_chart = svg.append("g")
     .attr("class", "focus")
-    .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .attr("clip-path", "url(#clip)");
 
-const focusJP = svgJP.append("g")
+
+const focus = svg.append("g")
     .attr("class", "focus")
-    .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const contextJP = svgJP.append("g")
+const context = svg.append("g")
     .attr("class", "context")
-    .attr("transform", "translate(" + marginJP2.left + "," + marginJP2.top + ")");
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 
-
+/* Upload a data CSV file "data.csv" to your public GitHub repository.
+   Then, make sure that your uploaded file exists by accessing the following URL in your browser.
+   https://github.com/USERNAME/REPOSITORY/blob/master/data.csv
+   
+   The CSV file must have two columns: "time" and "value".
+   time: Timestamp formatted such as "2020-03-21 21:33:54"
+   value: numerical value
+   
+   Note: The direct public link of the CSV file is shown below, not the above (for browser).
+*/
 d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/instagram/mask_freq.csv",
-    countType, function (error, data) {
+    dataType, function (error, data) {
     if (error) throw error;
 
-  xJP.domain(d3.extent(data, function(d) { return d.time; }));
-  yJP.domain([0, d3.max(data, function (d) { return d.value; })]);
-  xJP2.domain(xJP.domain());
-  yJP2.domain(yJP.domain());
+  x.domain(d3.extent(data, function(d) { return d.time; }));
+  y.domain([0, d3.max(data, function (d) { return d.value; })]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
 
-    focusJP.append("g")
+    focus.append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + heightJP + ")")
-        .call(xAxisJP);
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-    focusJP.append("g")
+    focus.append("g")
         .attr("class", "axis axis--y")
-        .call(yAxisJP);
+        .call(yAxis);
 
-    lineChartJP.append("path")
+    Line_chart.append("path")
         .datum(data)
         .attr("class", "line")
-        .attr("d", lineJP);
+        .attr("d", line);
 
-    contextJP.append("path")
+    context.append("path")
         .datum(data)
         .attr("class", "line")
-        .attr("d", lineJP2);
+        .attr("d", line2);;
 
 
-  contextJP.append("g")
+  context.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + heightJP2 + ")")
-      .call(xAxisJP2);
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
 
-  contextJP.append("g")
+  context.append("g")
       .attr("class", "brush")
-      .call(brushJP)
-      .call(brushJP.move, xJP.range());
+      .call(brush)
+      .call(brush.move, x.range());
 
-  svgJP.append("rect")
+  svg.append("rect")
       .attr("class", "zoom")
-      .attr("width", widthJP)
-      .attr("height", heightJP)
-      .attr("transform", "translate(" + marginJP.left + "," + marginJP.top + ")")
-      .call(zoomJP);
+      .attr("width", width)
+      .attr("height", height)
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(zoom);
+
 
   console.log(data);
 });
 
-function brushedJP() {
+
+function brushed() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-    const s = d3.event.selection || xJP2.range();
-    xJP.domain(s.map(xJP2.invert, xJP2));
-  lineChartJP.select(".line").attr("d", lineJP);
-  focusJP.select(".axis--x").call(xAxisJP);
-  svgJP.select(".zoom").call(zoomJP.transform, d3.zoomIdentity
-      .scale(widthJP / (s[1] - s[0]))
+    const s = d3.event.selection || x2.range();
+    x.domain(s.map(x2.invert, x2));
+  Line_chart.select(".line").attr("d", line);
+  focus.select(".axis--x").call(xAxis);
+  svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+      .scale(width / (s[1] - s[0]))
       .translate(-s[0], 0));
 }
 
-function zoomedJP() {
+function zoomed() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
     const t = d3.event.transform;
-    xJP.domain(t.rescaleX(xJP2).domain());
-  lineChartJP.select(".line").attr("d", lineJP);
-  focusJP.select(".axis--x").call(xAxisJP);
-  contextJP.select(".brush").call(brushJP.move, xJP.range().map(t.invertX, t));
+    x.domain(t.rescaleX(x2).domain());
+  Line_chart.select(".line").attr("d", line);
+  focus.select(".axis--x").call(xAxis);
+  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
 
-
-function countType(d) {
+function dataType(d) {
     d.time = parseTime(d.time);
     d.value = +d.value;
     return d;
 }
-
 
 </script>
 
