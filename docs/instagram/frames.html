@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- 
+  Template of the data visualization (line chart) in d3.js from CSV data file
+  Reference: Brush & Zoom line chart - bl.ocks.org: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hourly Instagram posts with hashtag "ClapBecauseWeCare"</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg-color: #F3F3F4;
+      --text-color: #323A56;
+      --yellow: #D4B158;
+      --red: #D25A5E;
+      --blue: #1C558C;
+      --green: #7FC0BA;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body,
+    text {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--text-color);
+      text-transform: uppercase;
+    }
+
+    .centered-graph {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    div {
+      flex: auto;
+    }
+
+     .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+    .zoom {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+
+  </style>
+</head>
+
+<body>
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td>
+        <iframe src="https://hkanezashi.github.io/GVTest/instagram/coronavirus_freq.html" width="100%" height="100%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+        <iframe src="https://hkanezashi.github.io/GVTest/instagram/cough_freq.html" width="100%" height="100%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+        <iframe src="https://hkanezashi.github.io/GVTest/instagram/fever_freq.html" width="100%" height="100%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
