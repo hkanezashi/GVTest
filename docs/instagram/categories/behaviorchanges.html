@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- 
+  Template of the data visualization (line chart) in d3.js from CSV data file
+  Reference: Brush & stayalive line chart - bl.ocks.org: https://bl.ocks.org/EfratVil/92f894ac0ba265192411e73f633a3e2f
+ -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hourly Instagram post counts about behavior changes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg-color: #F3F3F4;
+      --text-color: #323A56;
+      --yellow: #D4B158;
+      --red: #D25A5E;
+      --blue: #1C558C;
+      --green: #7FC0BA;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body,
+    text {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--text-color);
+      text-transform: uppercase;
+    }
+
+    .centered-graph {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    div {
+      flex: auto;
+    }
+
+     .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+    .stayalive {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h2><a id="top"></a>Behavior Changes</h2>
+
+<ul style="list-style-type: none">
+    <li><a href="#ClapBecauseWeCare">#ClapBecauseWeCare</a></li>
+    <li><a href="#stayalive">#stayalive</a></li>
+    <li><a href="#stayhealthy">#stayhealthy</a></li>
+    <li><a href="#staysafe">#staysafe</a></li>
+    <li><a href="#mask">#mask</a></li>
+    <li><a href="#facemask">#facemask</a></li>
+    <li><a href="#coronavirus">#coronavirus</a></li>
+</ul>
+
+
+
+<table width="100%" height="240%" border="0" cellspacing="10%" cellpadding="10%">
+    <tr>
+        <td>
+            <a id="ClapBecauseWeCare">#ClapBecauseWeCare</a>
+        </td>
+        <td>
+            <a id="stayalive">#stayalive</a>
+        </td>
+    </tr>
+    <tr>
+      <td>
+        <iframe src="../hashtags/ClapBecauseWeCare_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+        <iframe src="../hashtags/stayalive_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+
+    </tr>
+        <tr>
+        <td>
+            <a id="stayhealthy">#stayhealthy</a>
+        </td>
+        <td>
+            <a id="staysafe">#staysafe</a>
+        </td>
+    </tr>
+    <tr>
+      <td>
+        <iframe src="../hashtags/stayhealthy_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+        <iframe src="../hashtags/staysafe_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a id="mask">#mask</a>
+        </td>
+        <td>
+            <a id="facemask">#facemask</a>
+        </td>
+    </tr>
+    <tr>
+      <td>
+        <iframe src="../hashtags/mask_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+        <iframe src="../hashtags/facemask_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a id="coronavirus">#mask</a>
+        </td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+      <td>
+        <iframe src="../hashtags/coronavirus_freq.html" width="100%" height="240%" scrolling="auto" frameborder="0"></iframe>
+      </td>
+      <td>
+      </td>
+    </tr>
+  </table>
+
+<p><a href="#top">Back to top</a></p>
+
+</body>
+
+</html>

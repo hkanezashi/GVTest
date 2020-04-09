@@ -9,7 +9,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hourly Instagram posts with hashtag "ClapBecauseWeCare"</title>
+  <title>Hourly Instagram post counts by hashtag</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -34,11 +34,11 @@
       text-transform: uppercase;
     }
 
-    .centered-graph {
-      display: flex;
-      align-items: center;
-      height: 100%;
-    }
+    /*.centered-graph {*/
+    /*  display: flex;*/
+    /*  align-items: center;*/
+    /*  height: 100%;*/
+    /*}*/
 
     div {
       flex: auto;
@@ -59,65 +59,78 @@
 </head>
 
 <body>
-<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+
+<h2><a id="top"></a>Hourly Instagram post counts by hashtag</h2>
+
+<h3>Behavior Changes</h3>
+<ul style="list-style-type: none">
+    <li><a href="#coronavirus">#coronavirus</a></li>
+    <li><a href="#cough">#cough</a></li>
+</ul>
+
+<h3>Mental Health</h3>
+
+<h3>Prediction</h3>
+
+
+<h3>Social Distancing</h3>
+
+
+<h3><a id="coronavirus">#coronavirus</a></h3>
+<iframe src="hashtags/coronavirus_freq.html" width="100%" height="100%" scrolling="auto" frameborder="0"></iframe>
+
+
+<a href="#top">Back to top</a>
+<h3><a id="cough">#cough</a></h3>
+<iframe src="cough.html" width="100%" height="100%" scrolling="auto" frameborder="0"></iframe>
+
+
+
+<!--<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">-->
 <!--    <tr>-->
-<!--      <td>coronavirus</td>-->
-<!--      <td>cough</td>-->
-<!--      <td>fever</td>-->
+<!--      <td>-->
+<!--        <p>coronavirus</p>-->
+<!--        <iframe src="coronavirus_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
+<!--        <p>cough</p>-->
+<!--        <iframe src="cough_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
+<!--        <p>fever</p>-->
+<!--        <iframe src="fever_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
 <!--    </tr>-->
-    <tr>
-      <td>
-        <p>coronavirus</p>
-        <iframe src="coronavirus_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
-        <p>cough</p>
-        <iframe src="cough_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
-        <p>fever</p>
-        <iframe src="fever_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-    </tr>
 <!--    <tr>-->
-<!--      <td>mask</td>-->
-<!--      <td>facemask</td>-->
-<!--      <td>socialdistancing</td>-->
+<!--      <td>-->
+<!--        <p>mask</p>-->
+<!--        <iframe src="mask_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
+<!--        <p>facemask</p>-->
+<!--        <iframe src="facemask_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
+<!--        <p>socialdistancing</p>-->
+<!--        <iframe src="socialdistancing_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
 <!--    </tr>-->
-    <tr>
-      <td>
-        <p>mask</p>
-        <iframe src="mask_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
-        <p>facemask</p>
-        <iframe src="facemask_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
-        <p>socialdistancing</p>
-        <iframe src="socialdistancing_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-    </tr>
-    <tr>
-      <td>stayalive</td>
-      <td>stayathome</td>
-      <td>staysafe</td>
-    </tr>
-    <tr>
-      <td>
+<!--    <tr>-->
+<!--      <td>-->
 <!--        stayalive-->
-        <iframe src="stayalive_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
+<!--        <iframe src="stayalive_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
 <!--        stayathome-->
-        <iframe src="stayathome_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-      <td>
+<!--        <iframe src="stayathome_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--      <td>-->
 <!--        staysafe-->
-        <iframe src="staysafe_freq.html" scrolling="auto" frameborder="0"></iframe>
-      </td>
-    </tr>
-  </table>
+<!--        <iframe src="staysafe_freq.html" scrolling="auto" frameborder="0"></iframe>-->
+<!--      </td>-->
+<!--    </tr>-->
+<!--  </table>-->
+
 </body>
 
 </html>
