@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hourly total number of YouTube views for 5 channels in Spain (Not for kids, Gaming)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg-color: #F3F3F4;
+      --text-color: #323A56;
+      --yellow: #D4B158;
+      --red: #D25A5E;
+      --blue: #1C558C;
+      --green: #7FC0BA;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body,
+    text {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--text-color);
+      text-transform: uppercase;
+    }
+
+    .centered-graph {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    div {
+      flex: auto;
+    }
+
+     .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+    }
+    .zoom {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+  </style>
+</head>
+
+<body>
+  <div id='graph' class="centered-graph">
+    <!--  ADD INSIDE THIS DIV THE SVG GRAPH
+     Including the following svg attributes:
+     width="WWW" height="HHH" preserveAspectRatio="xMidYMid meet" viewBox="0 0 WWW HHH"
+     where WWW is the width, and HHH is the heigth of the graph
+
+     Design rules:
+     - No background color / or: var(--main-bg-color)
+     - Lines color: -->
+
+    <!-- EXAMPLE:
+    <svg width="960" height="500" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 500"></svg> -->
+    <svg id="SP" width="960" height="500" viewBox="0 0 960 500" preserveAspectRatio="xMidYMid meet"></svg>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+
+
+const svgSP = d3.select("#SP"),
+    marginSP = {top: 20, right: 20, bottom: 110, left: 80},
+    marginSP2 = {top: 430, right: 20, bottom: 30, left: 80},
+    widthSP = +svgSP.attr("width") - marginSP.left - marginSP.right,
+    heightSP = +svgSP.attr("height") - marginSP.top - marginSP.bottom,
+    heightSP2 = +svgSP.attr("height") - marginSP2.top - marginSP2.bottom;
+
+const xSP = d3.scaleTime().range([0, widthSP]),
+    xSP2 = d3.scaleTime().range([0, widthSP]),
+    ySP = d3.scaleLinear().range([heightSP, 0]),
+    ySP2 = d3.scaleLinear().range([heightSP2, 0]);
+
+const xAxisSP = d3.axisBottom(xSP),
+    xAxisSP2 = d3.axisBottom(xSP2),
+    yAxisSP = d3.axisLeft(ySP);
+
+const brushSP = d3.brushX()
+    .extent([[0, 0], [widthSP, heightSP2]])
+    .on("brush end", brushedSP);
+
+const zoomSP = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [widthSP, heightSP]])
+    .extent([[0, 0], [widthSP, heightSP]])
+    .on("zoom", zoomedSP);
+
+const lineSP = d3.line()
+    .x(function (d) {
+        return xSP(d.time);
+    })
+    .y(function (d) {
+        return ySP(d.value);
+    });
+
+const lineSP2 = d3.line()
+    .x(function (d) {
+        return xSP2(d.time);
+    })
+    .y(function (d) {
+        return ySP2(d.value);
+    });
+
+const lineChartSP = svgSP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")")
+    .attr("clip-path", "url(#clip)");
+
+const focusSP = svgSP.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")");
+
+const contextSP = svgSP.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + marginSP2.left + "," + marginSP2.top + ")");
+
+
+
+d3.csv("https://raw.githubusercontent.com/hkanezashi/GVTest/master/docs/data/youtube/youtube_count_SP-N-Gaming.csv",
+    countType, function (error, data) {
+    if (error) throw error;
+
+  xSP.domain(d3.extent(data, function(d) { return d.time; }));
+  ySP.domain([0, d3.max(data, function (d) { return d.value; })]);
+  xSP2.domain(xSP.domain());
+  ySP2.domain(ySP.domain());
+
+    focusSP.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + heightSP + ")")
+        .call(xAxisSP);
+
+    focusSP.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxisSP);
+
+    lineChartSP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineSP);
+
+    contextSP.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", lineSP2);
+
+
+  contextSP.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + heightSP2 + ")")
+      .call(xAxisSP2);
+
+  contextSP.append("g")
+      .attr("class", "brush")
+      .call(brushSP)
+      .call(brushSP.move, xSP.range());
+
+  svgSP.append("rect")
+      .attr("class", "zoom")
+      .attr("width", widthSP)
+      .attr("height", heightSP)
+      .attr("transform", "translate(" + marginSP.left + "," + marginSP.top + ")")
+      .call(zoomSP);
+
+  console.log(data);
+});
+
+function brushedSP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    const s = d3.event.selection || xSP2.range();
+    xSP.domain(s.map(xSP2.invert, xSP2));
+  lineChartSP.select(".line").attr("d", lineSP);
+  focusSP.select(".axis--x").call(xAxisSP);
+  svgSP.select(".zoom").call(zoomSP.transform, d3.zoomIdentity
+      .scale(widthSP / (s[1] - s[0]))
+      .translate(-s[0], 0));
+}
+
+function zoomedSP() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    const t = d3.event.transform;
+    xSP.domain(t.rescaleX(xSP2).domain());
+  lineChartSP.select(".line").attr("d", lineSP);
+  focusSP.select(".axis--x").call(xAxisSP);
+  contextSP.select(".brush").call(brushSP.move, xSP.range().map(t.invertX, t));
+}
+
+
+function countType(d) {
+    d.time = parseTime(d.time);
+    d.value = +d.value;
+    return d;
+}
+
+
+</script>
+
+  </div>
+
+</body>
+
+</html>
