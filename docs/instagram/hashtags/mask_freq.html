@@ -71,7 +71,7 @@ const svg = d3.select("svg"),
     height = +svg.attr("height") - margin.top - margin.bottom,
     height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
+const parseTime = d3.timeParse("%m/%d/%Y %H:%M");
 
 const x = d3.scaleTime().range([0, width]),
     x2 = d3.scaleTime().range([0, width]),
