@@ -60,11 +60,11 @@
 
 <body>
   <div id='graph' class="centered-graph">
-      <svg width="800" height="480" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid"></svg>
+      <svg id="shDay" width="800" height="480" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
-const svg = d3.select("svg"),
+const svg = d3.select("svg#shDay"),
     margin = {top: 20, right: 20, bottom: 110, left: 40},
     margin2 = {top: 430, right: 20, bottom: 30, left: 40},
     width = +svg.attr("width") - margin.left - margin.right,
